@@ -1,10 +1,9 @@
 name: Actualiza calendario cultural BCN
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:  # permite ejecutarlo manualmente
+  schedule:
+    - cron: '0 6 * * *'  # se ejecuta cada día a las 6:00
+  workflow_dispatch:     # permite ejecutarlo manualmente
 
 jobs:
   generate_ics:
@@ -31,4 +30,3 @@ jobs:
             git push
           else
             echo "❌ No se ha generado ningún archivo .ics"
-          fi
