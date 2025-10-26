@@ -34,3 +34,7 @@ jobs:
           git add AgendaCulturalBCN.ics || true
           git commit -m "Actualització automàtica AgendaCulturalBCN" || echo "No changes to commit"
           git push origin HEAD:${{ github.ref_name }}
+      - name: Instalar dependencias
+          run: |
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
