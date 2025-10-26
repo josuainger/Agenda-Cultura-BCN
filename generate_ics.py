@@ -1,5 +1,5 @@
 from ics import Calendar, Event
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Crear calendario
 calendar = Calendar()
@@ -18,6 +18,7 @@ peliculas_por_dia = {
     }
 }
 
+# Añadir eventos
 for fecha, peliculas in peliculas_por_dia.items():
     for titulo, horas in peliculas.items():
         for hora in horas:
