@@ -9,14 +9,20 @@ jobs:
   generate_ics:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Instalar librerías
+
+      - name: Instalar librerías necesarias
         run: pip install ics
-      - name: Generar calendario
+
+      - name: Generar calendario .ics
         run: python generate_ics.py
-      - name: Subir .ics a GitHub Pages
-        run: mv agenda-renoir.ics ./  # tu repo ya debe estar configurado con GitHub Pages
+
+      - name: Subir archivo .ics a GitHub Pages
+        run: |
+          mv agenda-renoir.ics ./  # asegurarse de que el archivo quede en la raíz
