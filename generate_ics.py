@@ -1,33 +1,34 @@
-import requests
-from bs4 import BeautifulSoup
 from ics import Calendar, Event
-from datetime import datetime
+from datetime import datetime, timedelta
 
+# Crear calendario
 calendar = Calendar()
-url = "https://zumzeigcine.coop/es/cine/calendari/"
-res = requests.get(url)
-soup = BeautifulSoup(res.text, "html.parser")
 
-for day_section in soup.select(".calendari_dia"):
-    day_str = day_section.select_one(".calendari_data").get_text(strip=True)
-    day_date = datetime.strptime(day_str, "%d.%m.%y").date()
+# Datos de prueba: películas y sesiones por día
+peliculas_por_dia = {
+    "2025-10-26": {
+        "Downton Abbey: El Gran Final": ["16:00", "20:30"],
+        "La Deuda": ["18:00", "21:00"],
+        "Los Domingos": ["16:15", "19:15"],
+    },
+    "2025-10-27": {
+        "Downton Abbey: El Gran Final": ["16:00", "20:30"],
+        "La Vida de Chuck": ["15:45", "19:00"],
+        "Los Domingos": ["16:15", "19:15"],
+    }
+}
 
-    for item in day_section.select(".calendari_item"):
-        title = item.select_one(".calendari_titol").get_text(strip=True)
-        time_str = item.select_one(".calendari_hora").get_text(strip=True)
-        dt = datetime.strptime(f"{day_date} {time_str}", "%Y-%m-%d %H:%M")
+for fecha, peliculas in peliculas_por_dia.items():
+    for titulo, horas in peliculas.items():
+        for hora in horas:
+            e = Event()
+            e.name = titulo
+            e.begin = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
+            e.location = "Cines Renoir Floridablanca"
+            calendar.events.add(e)
 
-        e = Event()
-        e.name = title
-        e.begin = dt
-        e.location = "Zumzeig Cinecoop"
-        e.url = url
-        calendar.events.add(e)
-
-with open("agenda-cultural-bcn.ics", "w", encoding="utf-8") as f:
+# Guardar archivo .ics
+with open("agenda-renoir.ics", "w", encoding="utf-8") as f:
     f.writelines(calendar)
 
-print("✅ Calendario generado: agenda-cultural-bcn.ics")
-
-
-print("✅ Calendario generado: agenda-cultural-bcn.ics")
+print("✅ Archivo 'agenda-renoir.ics' generado con todas las sesiones.")
