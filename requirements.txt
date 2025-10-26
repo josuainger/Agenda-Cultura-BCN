@@ -1,2 +1,4 @@
-pip install requests beautifulsoup4 ics
+requests
+beautifulsoup4
+ics
 
