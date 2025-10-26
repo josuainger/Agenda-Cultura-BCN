@@ -3,40 +3,31 @@ from bs4 import BeautifulSoup
 from ics import Calendar, Event
 from datetime import datetime
 
-# Crear un objeto Calendar
 calendar = Calendar()
-
-# URL de la página de calendario de Zumzeig
 url = "https://zumzeigcine.coop/es/cine/calendari/"
+res = requests.get(url)
+soup = BeautifulSoup(res.text, "html.parser")
 
-# Realizar la solicitud HTTP para obtener el contenido de la página
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+for day_section in soup.select(".calendari_dia"):
+    day_str = day_section.select_one(".calendari_data").get_text(strip=True)
+    day_date = datetime.strptime(day_str, "%d.%m.%y").date()
 
-# Buscar todos los elementos que contienen las sesiones
-sessions = soup.find_all('div', class_='calendari_item')
+    for item in day_section.select(".calendari_item"):
+        title = item.select_one(".calendari_titol").get_text(strip=True)
+        time_str = item.select_one(".calendari_hora").get_text(strip=True)
+        dt = datetime.strptime(f"{day_date} {time_str}", "%Y-%m-%d %H:%M")
 
-# Iterar sobre cada sesión y extraer la información
-for session in sessions:
-    # Extraer el título de la película
-    title = session.find('span', class_='calendari_titol').get_text(strip=True)
-    
-    # Extraer la fecha y hora de la sesión
-    datetime_str = session.find('span', class_='calendari_datahora').get_text(strip=True)
-    session_datetime = datetime.strptime(datetime_str, '%d.%m.%y (%a) %H:%M')
-    
-    # Crear un evento para el calendario
-    event = Event()
-    event.name = title
-    event.begin = session_datetime
-    event.location = "Zumzeig Cinecoop"
-    event.url = url
-    
-    # Añadir el evento al calendario
-    calendar.events.add(event)
+        e = Event()
+        e.name = title
+        e.begin = dt
+        e.location = "Zumzeig Cinecoop"
+        e.url = url
+        calendar.events.add(e)
 
-# Guardar el calendario en un archivo .ics
-with open('agenda-cultural-bcn.ics', 'w', encoding='utf-8') as f:
+with open("agenda-cultural-bcn.ics", "w", encoding="utf-8") as f:
     f.writelines(calendar)
+
+print("✅ Calendario generado: agenda-cultural-bcn.ics")
+
 
 print("✅ Calendario generado: agenda-cultural-bcn.ics")
